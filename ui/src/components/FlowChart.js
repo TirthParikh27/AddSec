@@ -14,12 +14,42 @@ const initialElements = [
   {
     id: '1',
     type: 'input',
-    data: { label: 'input node' },
-    position: { x: 250, y: 5 },
+    sourcePosition: 'right',
+    data: { label: 'Code Commit' },
+    position: { x: 250, y: 100 },
+  },
+  {
+    id: '2',
+    sourcePosition: 'right',
+    targetPosition: 'left',
+    data: { label: 'Build' },
+    position: { x: 500, y: 100 },
+  },
+  {
+    id: '3',
+    type: 'input',
+    sourcePosition: 'left',
+    data: { label: 'Deploy' },
+    position: { x: 750, y: 100 },
+  },
+  
+  {
+    id: 'e1-2',
+    source: '1',
+    type: 'smoothstep',
+    target: '2',
+    animated: true,
+  },
+  {
+    id: 'e2-3',
+    source: '2',
+    type: 'smoothstep',
+    target: '3',
+    animated: true,
   },
 ];
 
-let id = 0;
+let id = 3;
 const getId = () => `dndnode_${id++}`;
 
 const FlowChart = () => {
@@ -43,6 +73,7 @@ const FlowChart = () => {
 
     const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
     const type = event.dataTransfer.getData('application/reactflow');
+    const label = event.dataTransfer.getData('application/reactflow2');
     const position = reactFlowInstance.project({
       x: event.clientX - reactFlowBounds.left,
       y: event.clientY - reactFlowBounds.top,
@@ -51,7 +82,7 @@ const FlowChart = () => {
       id: getId(),
       type,
       position,
-      data: { label: `${type} node` },
+      data: { label: label },
     };
 
     setElements((es) => es.concat(newNode));
