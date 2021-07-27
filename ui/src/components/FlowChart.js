@@ -90,6 +90,7 @@ const FlowChart = () => {
 
   return (
     <div className="dndflow">
+      {console.log(elements.length)}
       <ReactFlowProvider>
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow

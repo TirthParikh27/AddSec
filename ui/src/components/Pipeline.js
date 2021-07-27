@@ -12,6 +12,8 @@ import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import Upload from "./Upload";
 import Main from "./Main";
+import Label from "./Label";
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -69,7 +71,9 @@ function getStepContent(step) {
     case 0:
       return <Main />;
     case 1:
-      return <Upload />;
+      return <Label />;
+    case 2:
+      return <Label />
   
     default:
       throw new Error("Unknown step");
