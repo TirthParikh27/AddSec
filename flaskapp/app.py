@@ -1,19 +1,37 @@
-from flask import Flask
-from flask_cors import CORS
-import yaml
+import os
+from flask import Flask, flash, request, redirect, url_for, session
+from werkzeug.utils import secure_filename
+from flask_cors import CORS, cross_origin
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger('HELLO WORLD')
+
+
+
+UPLOAD_FOLDER = '.'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','yml'])
 
 app = Flask(__name__)
 CORS(app)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-steps_list = []
+@app.route('/upload', methods=['POST'])
+def fileUpload():
+    target=os.path.join(UPLOAD_FOLDER,'test_docs')
+    if not os.path.isdir(target):
+        os.mkdir(target)
+    logger.info("welcome to upload`")
+    file = request.files['file'] 
+    filename = secure_filename(file.filename)
+    destination="/".join([target, filename])
+    file.save(destination)
+    session['uploadFilePath']=destination
+    response={"res" : "Successfully uploaded"}
+    return response
 
-@app.route("/")
-def helloWorld():
-  return "Hello, cross-origin-world!"
+if __name__ == "__main__":
+    app.secret_key = os.urandom(24)
+    app.run(debug=True,host="0.0.0.0",use_reloader=False)
 
-@app.route("/pipeline")
-def secure():swwww
-
-
-if __name__ == '__main__':
-  app.run(debug=True)

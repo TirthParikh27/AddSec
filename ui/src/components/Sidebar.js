@@ -1,8 +1,9 @@
 import React from "react";
 
 const Sidebar = () => {
-  const onDragStart = (event, nodeType) => {
+  const onDragStart = (event, nodeType , label) => {
     event.dataTransfer.setData("application/reactflow", nodeType);
+    event.dataTransfer.setData("application/reactflow2", label);
     event.dataTransfer.effectAllowed = "move";
   };
 
@@ -13,24 +14,24 @@ const Sidebar = () => {
       </div>
       <div
         className="dndnode input"
-        onDragStart={(event) => onDragStart(event, "input")}
+        onDragStart={(event) => onDragStart(event, "input" , "AWS CodeGuru (SAST)")}
         draggable
       >
-        Input Node
+        AWS CodeGuru (SAST)
       </div>
       <div
         className="dndnode"
-        onDragStart={(event) => onDragStart(event, "default")}
+        onDragStart={(event) => onDragStart(event, "default" , "OWASP ZAP (DAST)")}
         draggable
       >
-        Default Node
+        OWASP ZAP (DAST)
       </div>
       <div
         className="dndnode output"
-        onDragStart={(event) => onDragStart(event, "output")}
+        onDragStart={(event) => onDragStart(event, "output" , "Docker Image Scanner")}
         draggable
       >
-        Output Node
+        Docker Image Scanner
       </div>
     </aside>
   );
