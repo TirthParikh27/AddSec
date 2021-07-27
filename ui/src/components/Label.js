@@ -37,14 +37,17 @@ function Label() {
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
 
-  // useEffect(() => {
-  //   fetch("http://localhost:5000/stages")
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log(data);
-  //       setStages(data["stages"]);
-  //     });
-  // }, [0]);
+  useEffect(() => {
+    fetch("http://localhost:5000/getNames")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        var name_list = data.map((stage) => {
+          return stage["name"];
+        });
+        setStages(name_list);
+      });
+  }, [0]);
 
   const handleClose1 = (event, reason) => {
     if (reason === "clickaway") {
@@ -66,12 +69,12 @@ function Label() {
       console.log("Select a value for all 3 stages !");
       setOpen1(true);
     } else {
-      fetch("http://localhost:5000/config", {
+      fetch("http://localhost:5000/setPos", {
         method: "POST", // or 'PUT'
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(config),
+        body: JSON.stringify({ pos: config }),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -103,13 +106,14 @@ function Label() {
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {stages.map((stage, index) => {
-              return (
-                <MenuItem key={index} value={stage}>
-                  {stage}
-                </MenuItem>
-              );
-            })}
+            {stages !== "undefined" &&
+              stages.map((stage, index) => {
+                return (
+                  <MenuItem key={index} value={stage}>
+                    {stage}
+                  </MenuItem>
+                );
+              })}
           </Select>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>

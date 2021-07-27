@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 import logging
 import yaml
-
+import time
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,11 +24,12 @@ app.secret_key = os.urandom(24)
 # file name of uploaded workflow
 filename = ''
 # store position of commit, build, deploy stages
-pos = []
+pos = {}
 # steps
 steps = []
 @app.route('/upload', methods=['POST'])
 def fileUpload():
+    global filename
     target=os.path.join(UPLOAD_FOLDER,'test_docs')
     if not os.path.isdir(target):
         os.mkdir(target)
@@ -44,6 +45,7 @@ def fileUpload():
 # get step names from workflow yaml
 @app.route('/getNames')
 def names():
+  
   with open('test_docs/{}'.format(filename)) as f:
     inp = yaml.load(f)
     steps = inp['jobs']['deploy']['steps']
@@ -60,7 +62,8 @@ def namePos():
 def setPos():
   data = request.get_json()
   positions = data.get('pos','')
-  pos = list(positions)
+  pos = positions
+  print(pos)
   response={"res" : "Successfully stored positions"}
   return response
 
@@ -72,5 +75,5 @@ def makeSecure():
 
 
 if __name__ == "__main__":
-    app.run(debug=True,host="0.0.0.0",use_reloader=False)
+    app.run(debug=True,host="0.0.0.0")
 
