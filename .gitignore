@@ -120,3 +120,5 @@ pyvenv.cfg
 share/
 
 flaskapp/__pycache__
+flaskapp/test_docs/
+ui/package-lock.json
