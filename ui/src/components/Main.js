@@ -1,5 +1,7 @@
 import React from 'react';
 import Button from "@material-ui/core/Button";
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
@@ -32,15 +34,21 @@ class Main extends React.Component {
         <div>
           <input ref={(ref) => { this.uploadInput = ref; }} type="file" />
         </div>
-        <div>
-          <input ref={(ref) => { this.fileName = ref; }} type="text" placeholder="Enter the desired name of file" />
-        </div>
+       
         <br />
         <div>
         {/* <Button variant="outlined" color="primary" >
           Submit
         </Button> */}
-        <button>Submit</button>
+        
+        <Button
+        type="submit"
+        variant="outlined"
+        color="primary"
+        startIcon={<CloudUploadIcon />}
+      >
+        Upload
+      </Button>
         </div>
        
       </form>
