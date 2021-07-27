@@ -111,3 +111,11 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# ignore
+.bin/
+.lib/
+.lib64
+.pyvenv.cfg
+.share/
+
