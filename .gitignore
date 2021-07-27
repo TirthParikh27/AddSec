@@ -119,3 +119,4 @@ lib64
 pyvenv.cfg
 share/
 
+flaskapp/__pycache__
