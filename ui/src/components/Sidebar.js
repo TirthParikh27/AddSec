@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import React from "react";
 
 const Sidebar = () => {
@@ -9,9 +10,10 @@ const Sidebar = () => {
 
   return (
     <aside>
-      <div className="description">
+      <Typography>
         You can drag these nodes to the pane on the right.
-      </div>
+        </Typography>
+    
       <div
         className="dndnode input"
         onDragStart={(event) => onDragStart(event, "input" , "AWS CodeGuru (SAST)")}
