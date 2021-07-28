@@ -69,7 +69,7 @@ function Label() {
       console.log("Select a value for all 3 stages !");
       setOpen1(true);
     } else {
-      fetch("http://localhost:5000/setPos", {
+      fetch("http://localhost:5000/setStagePos", {
         method: "POST", // or 'PUT'
         headers: {
           "Content-Type": "application/json",

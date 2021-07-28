@@ -11,8 +11,6 @@ logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger('HELLO WORLD')
 
-
-
 UPLOAD_FOLDER = '.'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','yml'])
 
@@ -23,24 +21,28 @@ app.secret_key = os.urandom(24)
 
 # file name of uploaded workflow
 filename = ''
+# input json
+file_dict = {}
 # store position of commit, build, deploy stages
 pos = {}
 # steps
 steps = []
+# steps with visibility
+updated_steps = []
 
 # hide unnecessary steps in the ui
-def checkVisible(inp):
+def checkVisible(step):
     black_list = ['checkout', 'slug']
     for word in black_list:
         try:
-            if inp['name'] != None:
-                if word in inp['name']:
+            if step['name'] != None:
+                if word in step['name']:
                     return False
-            if inp['uses'] != None:
-                if word in inp['name']:
+            if step['uses'] != None:
+                if word in step['name']:
                     return False
-            if inp['run'] != None:
-                if word in inp['run']:
+            if step['run'] != None:
+                if word in step['run']:
                     return False
         except:
             continue
@@ -65,11 +67,11 @@ def fileUpload():
 # get step names from workflow yaml
 @app.route('/getNames')
 def names():
-  with open('test_docs/{}'.format(filename)) as f:
-    inp = yaml.load(f)
-    steps = inp['jobs']['deploy']['steps']
-    # print(steps)
-    updated_steps = []
+    global file_dict
+    global updated_steps
+    with open('test_docs/{}'.format(filename)) as f:
+        file_dict = yaml.safe_load(f)
+    steps = file_dict['jobs']['deploy']['steps']
     for s in steps:
         s['visible'] = checkVisible(s)
         updated_steps.append(s)
@@ -78,22 +80,27 @@ def names():
 # return the names of all steps and pos of tools
 @app.route('/getNamesPos')
 def namePos():
-  return {'steps':steps, 'pos':pos}
+    global updated_steps
+    print(updated_steps[1])
+    return {'steps':updated_steps, 'pos':pos}
 
 # post the index of stages
-@app.route('/setPos', methods=['POST'])
+@app.route('/setStagePos', methods=['POST'])
 def setPos():
-  data = request.get_json()
-  positions = data.get('pos','')
-  pos = positions
-  print(pos)
-  response={"res" : "Successfully stored positions"}
-  return response
+    global pos
+    data = request.get_json()
+    pos = data.get('pos','')
+    print(pos)
+    response={"res" : "Successfully stored positions"}
+    return response
 
 # make the changes to the pipeline
-@app.route('/secure')
+@app.route('/setToolNames', methods=['POST'])
 def makeSecure():
-  pass
+    secure_flow = {}
+    response={"res" : "Successfully integrated tools"}
+    return response
+
 
 
 
