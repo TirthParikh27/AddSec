@@ -29,6 +29,9 @@ pos = {}
 steps = []
 # steps with visibility
 updated_steps = []
+# tools
+tools_list = ['CodeGuru', 'ZAP']
+tools_type = ['SAST', 'DAST']
 
 # hide unnecessary steps in the ui
 def checkVisible(step):
@@ -69,21 +72,23 @@ def fileUpload():
 def names():
     global file_dict
     global updated_steps
-    with open('test_docs/{}'.format(filename)) as f:
-        file_dict = yaml.safe_load(f)
-    steps = file_dict['jobs']['deploy']['steps']
-    for s in steps:
-        s['visible'] = checkVisible(s)
-        updated_steps.append(s)
+    if len(updated_steps)==0:
+        with open('test_docs/{}'.format(filename)) as f:
+            file_dict = yaml.safe_load(f)
+        steps = file_dict['jobs']['deploy']['steps']
+        for s in steps:
+            s['visible'] = checkVisible(s)
+            updated_steps.append(s)
     return jsonify(updated_steps)
 
 # return the names of all steps and pos of tools
 @app.route('/getNamesPos')
 def namePos():
     global updated_steps
-    print(updated_steps[1])
     return {'steps':updated_steps, 'pos':pos}
 
+# return tools
+@app.route('/')
 # post the index of stages
 @app.route('/setStagePos', methods=['POST'])
 def setPos():
