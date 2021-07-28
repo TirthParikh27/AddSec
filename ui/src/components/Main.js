@@ -42,14 +42,13 @@ class Main extends React.Component {
         <br />
 
         <div>
-<<<<<<< HEAD
           <input ref={(ref) => { this.fileName = ref; }} type="text" placeholder="Enter the desired name of file" />
         </div>
         <div>
         {/* <Button variant="outlined" color="primary" >
           Submit
         </Button> */}
-        
+
         <Button
         type="submit"
         variant="outlined"
@@ -58,16 +57,6 @@ class Main extends React.Component {
       >
         Upload
       </Button>
-=======
-          <Button
-            type="submit"
-            variant="outlined"
-            color="primary"
-            startIcon={<CloudUploadIcon />}
-          >
-            Upload
-          </Button>
->>>>>>> d1ef7a2b7a5f32be85d89b5a6dcad0c5fa803469
         </div>
       </form>
     );
