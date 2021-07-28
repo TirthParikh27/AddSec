@@ -13,106 +13,144 @@ import "../css/dnd.css";
 import { Card, CardContent, Grid } from "@material-ui/core";
 import SecurityIcon from "@material-ui/icons/Security";
 
-const initialElements = [
-  {
-    id: "1",
-    type: "input",
-    sourcePosition: "right",
-    data: { label: "Code Commit" },
-    position: { x: 250, y: 100 },
-  },
-  {
-    id: "2",
-    sourcePosition: "right",
-    targetPosition: "left",
-    data: { label: "Build" },
-    position: { x: 500, y: 100 },
-  },
-  {
-    id: "3",
-    type: "input",
-    sourcePosition: "left",
-    data: { label: "Deploy" },
-    position: { x: 750, y: 100 },
-  },
+// const initialElements = [
+//   {
+//     id: "1",
+//     type: "input",
+//     sourcePosition: "right",
+//     data: { label: "Code Commit" },
+//     position: { x: 250, y: 100 },
+//   },
+//   {
+//     id: "2",
+//     sourcePosition: "right",
+//     targetPosition: "left",
+//     data: { label: "Build" },
+//     position: { x: 500, y: 100 },
+//   },
+//   {
+//     id: "3",
+//     type: "input",
+//     sourcePosition: "left",
+//     data: { label: "Deploy" },
+//     position: { x: 750, y: 100 },
+//   },
 
-  {
-    id: "e1-2",
-    source: "1",
-    type: "smoothstep",
-    target: "2",
-    animated: true,
-  },
-  {
-    id: "e2-3",
-    source: "2",
-    type: "smoothstep",
-    target: "3",
-    animated: true,
-  },
-];
+//   {
+//     id: "e1-2",
+//     source: "1",
+//     type: "smoothstep",
+//     target: "2",
+//     animated: true,
+//   },
+//   {
+//     id: "e2-3",
+//     source: "2",
+//     type: "smoothstep",
+//     target: "3",
+//     animated: true,
+//   },
+// ];
 
-let id = 3;
-const getId = () => `dndnode_${id++}`;
+// let id = 3;
+// const getId = () => `dndnode_${id++}`;
 
 const FlowChart = () => {
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [elements, setElements] = useState(initialElements);
+  const [elements, setElements] = useState([]);
   const onConnect = (params) => setElements((els) => addEdge(params, els));
   const onElementsRemove = (elementsToRemove) =>
     setElements((els) => removeElements(elementsToRemove, els));
 
   const getElements = (list) => {
     var finalElements = [];
+    var pipeline = []
     var id = 1;
-    var x = 250
+    var x = 200
+    var y = 100
+    var flag = 0
     for (var i = 0; i < list.length; i++) {
       if (list[i]["visible"]) {
-        if (finalElements.lenght === 0) {
-          finalElements.append({
+        if (finalElements.length === 0) {
+          finalElements.push({
             id: String(id++),
             type: "input",
             sourcePosition: "right",
             data: { label: list[i]["name"] },
-            position: { x: XPathEvaluator, y: 100 },
+            position: { x: x, y: y },
           });
         } else if (i === list.length - 1) {
-          finalElements.append({
+          finalElements.push({
             id: String(id++),
             type: "input",
             sourcePosition: "left",
             data: { label: list[i]["name"] },
-            position: { x: x, y: 100 },
+            position: { x: x, y: y },
           });
         } else {
-          finalElements.append({
+          finalElements.push({
             id: String(id++),
             sourcePosition: "right",
             targetPosition: "left",
             data: { label: list[i]["name"] },
-            position: { x: x, y: 100 },
+            position: { x: x, y: y },
           })
         }
-        x += 250
+
+        if(flag === 0){
+          if(x === 800){
+            flag = 1
+            y += 100
+          }else{
+            x += 200
+          }
+          
+        } else {
+          if(x !== 200){
+            x -= 200
+          }else{
+            flag = 0
+            y += 100
+          }
+          
+        }
+        
+        
       }
     }
-    return finalElements
+    pipeline = finalElements
+    //console.log(finalElements.length)
+    var len = finalElements.length
+    for(var k = 1 ; k < len; k++){
+      var j = k+1
+      pipeline.push({
+        id: "e"+ k.toString() + "-" + j.toString(),
+        source: k.toString(),
+        type: "smoothstep",
+        target: j.toString(),
+        animated: true,
+      })
+    }
+    return pipeline
   };
 
   React.useEffect(() => {
     const fetchProducts = async () => {
-      const products = await fetch("http://localhost:5000/getNamesPos").then((response)=>{
+      const products = await fetch("http://localhost:5000/getNames").then((response)=>{
          return  response.json()
       }).then((data)=>{
-        return data["steps"]
+        console.log(data)
+        const finalElements =  getElements( data)
+        return finalElements
       })
-      const finalElements = await getElements(products)
-      setElements(finalElements)
+      
+      setElements(products)
     }
     fetchProducts()
   }, [])
-
+ 
+  const getId = () => `dndnode_${elements.length++}`;
   const onLoad = (_reactFlowInstance) => {
     _reactFlowInstance.fitView({ padding: 0.2 });
     setReactFlowInstance(_reactFlowInstance);
