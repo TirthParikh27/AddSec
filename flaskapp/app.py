@@ -35,6 +35,7 @@ def fileUpload():
     logger.info("welcome to upload`")
     file = request.files['file'] 
     filename = secure_filename(file.filename)
+    print(filename)
     destination="/".join([target, filename])
     file.save(destination)
     session['uploadFilePath']=destination
@@ -44,6 +45,7 @@ def fileUpload():
 # get step names from workflow yaml
 @app.route('/getNames')
 def names():
+  print('sdjfhsdfhh')
   with open('test_docs/{}'.format(filename)) as f:
     inp = yaml.load(f)
     steps = inp['jobs']['deploy']['steps']

@@ -31,10 +31,10 @@ jobs:
       - name: checkout the files
         uses: actions/checkout@v2
 
-      #       - name: install node dependencies
-      #         uses: bahmutov/npm-install@v1
-      #         with:
-      #           useLockFile: false
+#       - name: install node dependencies
+#         uses: bahmutov/npm-install@v1
+#         with:
+#           useLockFile: false
 
       - name: configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -42,29 +42,30 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-
+      
       - name: npm install
-        run: "sudo apt update -y && sudo apt install nodejs npm -y"
-
+        run: 'sudo apt update -y && sudo apt install nodejs npm -y'
+      
       - name: cdk install
-        run: "sudo npm install -g aws-cdk"
-
+        run: 'sudo npm install -g aws-cdk'
+      
       - name: Installing pip dependencies
-        run: "pip3 install -r requirements.txt"
-
+        run: 'pip3 install -r requirements.txt'
+      
+      
       - name: deploy
         id: cdk_deploy
         run: cdk deploy \"AwesomeStack-${STAGE}\" --require-approval never --outputs-file cdk.out.json
-
+      
       - name: post deploy
         id: cdk_post_deploy
-        run: 'node --eval "console.log(''::set-output name=env_url::'' + require(''./cdk.out.json'')[''AwesomeStack-${STAGE}''].DeploymentUrl)"'
-
+        run: "node --eval \"console.log('::set-output name=env_url::' + require('./cdk.out.json')['AwesomeStack-${STAGE}'].DeploymentUrl)\""
+      
       - name: ZAP DAST Scan
         uses: zaproxy/action-full-scan@v0.2.0
         with:
           target: ${{ steps.cdk_post_deploy.outputs.env_url }}
-
+      
       - name: update the github deployment status
         uses: bobheadxi/deployments@v0.5.2
         if: always()
