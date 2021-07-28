@@ -37,6 +37,9 @@ class Main extends React.Component {
        
         <br />
         <div>
+          <input ref={(ref) => { this.fileName = ref; }} type="text" placeholder="Enter the desired name of file" />
+        </div>
+        <div>
         {/* <Button variant="outlined" color="primary" >
           Submit
         </Button> */}
