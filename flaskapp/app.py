@@ -27,6 +27,25 @@ filename = ''
 pos = {}
 # steps
 steps = []
+
+# hide unnecessary steps in the ui
+def checkVisible(inp):
+    black_list = ['checkout', 'slug']
+    for word in black_list:
+        try:
+            if inp['name'] != None:
+                if word in inp['name']:
+                    return False
+            if inp['uses'] != None:
+                if word in inp['name']:
+                    return False
+            if inp['run'] != None:
+                if word in inp['run']:
+                    return False
+        except:
+            continue
+    return True
+
 @app.route('/upload', methods=['POST'])
 def fileUpload():
     global filename
@@ -46,12 +65,15 @@ def fileUpload():
 # get step names from workflow yaml
 @app.route('/getNames')
 def names():
-
   with open('test_docs/{}'.format(filename)) as f:
     inp = yaml.load(f)
     steps = inp['jobs']['deploy']['steps']
-    print(steps)
-    return jsonify(steps)
+    # print(steps)
+    updated_steps = []
+    for s in steps:
+        s['visible'] = checkVisible(s)
+        updated_steps.append(s)
+    return jsonify(updated_steps)
 
 # return the names of all steps and pos of tools
 @app.route('/getNamesPos')
