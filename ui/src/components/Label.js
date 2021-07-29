@@ -6,8 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import { InputLabel, Select, MenuItem } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
 import SnackBar from "./SnackBar";
 
 const useStyles = makeStyles((theme) => ({
@@ -169,7 +167,7 @@ function Label() {
         <Grid item xs={12}>
           <FormControlLabel
             control={<Checkbox value="allowExtraEmails" color="primary" />}
-            label="I want to receive inspiration, marketing promotions and updates via email."
+            label="I accept that  : AWS >>> Other Cloud Providers"
           />
         </Grid>
       </Grid>

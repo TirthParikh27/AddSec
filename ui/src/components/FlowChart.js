@@ -8,10 +8,16 @@ import ReactFlow, {
 
 import Button from "@material-ui/core/Button";
 import Sidebar from "./Sidebar";
-
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
 import "../css/dnd.css";
 import { Card, CardContent, Grid } from "@material-ui/core";
 import SecurityIcon from "@material-ui/icons/Security";
+import SnackBar from "./SnackBar";
+
 
 // const initialElements = [
 //   {
@@ -59,17 +65,90 @@ const FlowChart = () => {
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [elements, setElements] = useState([]);
+  const [value, setValue] = React.useState("Condensed");
+  const [open  , setOpen] = React.useState(false)
   const onConnect = (params) => setElements((els) => addEdge(params, els));
   const onElementsRemove = (elementsToRemove) =>
     setElements((els) => removeElements(elementsToRemove, els));
 
+  const getImpElements = (data) => {
+    var list = data.steps;
+    var finalElements = [];
+    var pipeline = [];
+    var id = 1;
+    var x = 200;
+    var y = 100;
+    var flag = 0;
+    for (var i = 0; i < list.length; i++) {
+      if (
+        list[i]["visible"] &&
+        Object.values(data["pos"]).includes(list[i]["name"])
+      ) {
+        if (list[i]["name"] === data["pos"]["commit"]) {
+          finalElements.push({
+            id: String(id++),
+            type: "input",
+            sourcePosition: "right",
+            data: { label: list[i]["name"] + "- COMMIT" },
+            position: { x: x, y: y },
+          });
+        } else if (list[i]["name"] === data["pos"]["deploy"]) {
+          finalElements.push({
+            id: String(id++),
+            type: "input",
+            sourcePosition: "left",
+            data: { label: list[i]["name"] + "- DEPLOY" },
+            position: { x: x, y: y },
+          });
+        } else {
+          finalElements.push({
+            id: String(id++),
+            sourcePosition: "right",
+            targetPosition: "left",
+            data: { label: list[i]["name"] + "- BUILD" },
+            position: { x: x, y: y },
+          });
+        }
+
+        if (flag === 0) {
+          if (x === 800) {
+            flag = 1;
+            y += 100;
+          } else {
+            x += 200;
+          }
+        } else {
+          if (x !== 200) {
+            x -= 200;
+          } else {
+            flag = 0;
+            y += 100;
+          }
+        }
+      }
+    }
+    pipeline = finalElements;
+    //console.log(finalElements.length)
+    var len = finalElements.length;
+    for (var k = 1; k < len; k++) {
+      var j = k + 1;
+      pipeline.push({
+        id: "e" + k.toString() + "-" + j.toString(),
+        source: k.toString(),
+        type: "smoothstep",
+        target: j.toString(),
+        animated: true,
+      });
+    }
+    return pipeline;
+  };
   const getElements = (list) => {
     var finalElements = [];
-    var pipeline = []
+    var pipeline = [];
     var id = 1;
-    var x = 200
-    var y = 100
-    var flag = 0
+    var x = 200;
+    var y = 100;
+    var flag = 0;
     for (var i = 0; i < list.length; i++) {
       if (list[i]["visible"]) {
         if (finalElements.length === 0) {
@@ -95,73 +174,94 @@ const FlowChart = () => {
             targetPosition: "left",
             data: { label: list[i]["name"] },
             position: { x: x, y: y },
-          })
+          });
         }
 
-        if(flag === 0){
-          if(x === 800){
-            flag = 1
-            y += 100
-          }else{
-            x += 200
+        if (flag === 0) {
+          if (x === 800) {
+            flag = 1;
+            y += 100;
+          } else {
+            x += 200;
           }
-          
         } else {
-          if(x !== 200){
-            x -= 200
-          }else{
-            flag = 0
-            y += 100
+          if (x !== 200) {
+            x -= 200;
+          } else {
+            flag = 0;
+            y += 100;
           }
-          
         }
-        
-        
       }
     }
-    pipeline = finalElements
+    pipeline = finalElements;
     //console.log(finalElements.length)
-    var len = finalElements.length
-    for(var k = 1 ; k < len; k++){
-      var j = k+1
+    var len = finalElements.length;
+    for (var k = 1; k < len; k++) {
+      var j = k + 1;
       pipeline.push({
-        id: "e"+ k.toString() + "-" + j.toString(),
+        id: "e" + k.toString() + "-" + j.toString(),
         source: k.toString(),
         type: "smoothstep",
         target: j.toString(),
         animated: true,
-      })
+      });
     }
-    return pipeline
+    return pipeline;
   };
 
   React.useEffect(() => {
     const fetchProducts = async () => {
-      const products = await fetch("http://localhost:5000/getNames").then((response)=>{
-         return  response.json()
-      }).then((data)=>{
-        console.log(data)
-        const finalElements =  getElements( data)
-        return finalElements
-      })
-      
-      setElements(products)
+      const products = await fetch("http://localhost:5000/getNamesPos")
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          var finalElements = [];
+          if (value === "Condensed") {
+            finalElements = getImpElements(data);
+          } else {
+            finalElements = getElements(data.steps);
+          }
+
+          return finalElements;
+        });
+
+      setElements(products);
+    };
+    fetchProducts();
+  }, [value]);
+
+  const handleRadio = (event) => {
+    setValue(event.target.value);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
     }
-    fetchProducts()
-  }, [])
- 
+
+    setOpen(false);
+  };
+
   const getId = () => `dndnode_${elements.length++}`;
   const onLoad = (_reactFlowInstance) => {
     _reactFlowInstance.fitView({ padding: 0.2 });
     setReactFlowInstance(_reactFlowInstance);
   };
   const handleIntegrate = () => {
-    fetch("http://localhost:5000/secure", {
+    console.log(elements);
+    fetch("http://localhost:5000/setToolNames", {
       method: "POST",
-      body: elements,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(elements),
     }).then((response) => {
-      if (response.status == "200") {
+      if (response.ok) {
         console.log("Succesfully Integrated !");
+        setOpen(true)
       } else {
         console.log("Integration Failed !");
       }
@@ -171,7 +271,7 @@ const FlowChart = () => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   };
-  const graphStyles = { width: "100%", height: "500px" };
+  const graphStyles = { width: "100%", height: "400px" };
   const onDrop = (event) => {
     event.preventDefault();
 
@@ -197,6 +297,36 @@ const FlowChart = () => {
       {console.log(elements.length)}
       <ReactFlowProvider>
         <Grid container alignItems="center" justify="center">
+          <Grid item xs={12}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Pipeline View</FormLabel>
+
+              <RadioGroup
+                aria-label="Pipeline View"
+                name="gender1"
+                value={value}
+                onChange={handleRadio}
+              >
+                <Grid container spacing={2}>
+                  
+                  <Grid item xs={6}>
+                    <FormControlLabel
+                      value={"Condensed"}
+                      control={<Radio />}
+                      label="Condensed Pipeline"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <FormControlLabel
+                      value={"Full"}
+                      control={<Radio />}
+                      label="Full Pipeline"
+                    />
+                  </Grid>
+                </Grid>
+              </RadioGroup>
+            </FormControl>
+          </Grid>
           <Grid item xs={10}>
             <div className="reactflow-wrapper" ref={reactFlowWrapper}>
               <ReactFlow
@@ -235,9 +365,18 @@ const FlowChart = () => {
               Intergate
             </Button>
           </Grid>
-          <Grid item={3}></Grid>
+          <Grid item={3}>
+          <SnackBar
+        open={open}
+        handleClose={handleClose}
+        type={"success"}
+        message={"Configuration Saved Successfully !"}
+      />
+          </Grid>
         </Grid>
+        
       </ReactFlowProvider>
+      
     </div>
   );
 };
