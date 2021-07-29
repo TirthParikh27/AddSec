@@ -32,6 +32,8 @@ updated_steps = []
 # tools
 tools_list = ['CodeGuru', 'ZAP']
 tools_type = ['SAST', 'DAST']
+# secure pipeline dict
+secure_flow = {}
 
 # hide unnecessary steps in the ui
 def checkVisible(step):
@@ -87,8 +89,21 @@ def namePos():
     global updated_steps
     return {'steps':updated_steps, 'pos':pos}
 
-# return tools
-@app.route('/')
+# return list of tools and type
+@app.route('/getToolNames')
+def toolNames():
+    global tools_list
+    global tools_type
+    res = []
+    for i in range(len(tools_list)):
+        res.append(tools_list[i]+'('+tools_type[i]+')')
+    return jsonify(res)
+
+@app.route('/getSecurePipe')
+def securePipe():
+    global secure_flow
+    return secure_flow
+
 # post the index of stages
 @app.route('/setStagePos', methods=['POST'])
 def setPos():
@@ -100,12 +115,13 @@ def setPos():
     return response
 
 # make the changes to the pipeline
+# {'id':{'data':{'label'}}}
 @app.route('/setToolNames', methods=['POST'])
 def makeSecure():
     secure_flow = {}
     response={"res" : "Successfully integrated tools"}
     return response
-
+    
 
 
 
