@@ -2,13 +2,23 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import SaveIcon from "@material-ui/icons/Save";
+import SnackBar from "./SnackBar";
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
-
+    this.state = {show : false}
     this.handleUploadImage = this.handleUploadImage.bind(this);
+    this.handleClose1 = this.handleClose1.bind(this)
   }
+  handleClose1 = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
 
+    this.setState({show:false});
+  };
+  
   handleUploadImage(ev) {
     ev.preventDefault();
 
@@ -20,8 +30,9 @@ class Main extends React.Component {
       method: "POST",
       body: data,
     }).then((response) => {
-      if (response.status == "200") {
+      if (response.ok) {
         console.log("Succesfully uploaded");
+        this.setState({show:true})
       }
     });
   }
@@ -50,6 +61,12 @@ class Main extends React.Component {
           >
             Upload
           </Button>
+          <SnackBar
+        open={this.state.show}
+        handleClose={this.handleClose1}
+        type={"success"}
+        message={"Pipeline Uploaded Successfully !"}
+      />
         </div>
       </form>
     );

@@ -119,9 +119,11 @@ def setPos():
 @app.route('/setToolNames', methods=['POST'])
 def makeSecure():
     secure_flow = {}
+    data = request.get_json()
+    print(data)
     response={"res" : "Successfully integrated tools"}
-    return response
-    
+    return response , 200
+
 
 
 
