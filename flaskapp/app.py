@@ -108,7 +108,12 @@ def makeSecure():
     response={"res" : "Successfully integrated tools"}
     return response , 200
 
-
+@app.route('/setRepo' , methods=['POST'])
+def setRepo():
+    data = request.get_json()
+    print(data)
+    response={"res" : "Successfully Found workflow file"}
+    return response , 200
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import Upload from "./Upload";
 import Main from "./Main";
 import Label from "./Label";
+import Repo from "./Repo";
 
 function Copyright() {
   return (
@@ -64,12 +65,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ["Upload Github Yaml Workflow", "Label Pipeline Stages", "Review Pipeline Config"];
+const steps = ["Enter your repository URL", "Label Pipeline Stages", "Tools Configuration"];
 
 function getStepContent(step) {
   switch (step) {
     case 0:
-      return <Main />;
+      return <Repo />;
     case 1:
       return <Label />;
     case 2:
