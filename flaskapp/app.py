@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 import logging
 import yaml
+import json
 import time
 
 logging.basicConfig(level=logging.INFO)
@@ -30,8 +31,8 @@ steps = []
 # steps with visibility
 updated_steps = []
 # tools
-tools_list = ['CodeGuru', 'ZAP']
-tools_type = ['SAST', 'DAST']
+tools_list = ['CodeGuru', 'ZAP', 'Snyk']
+tools_type = ['SAST', 'DAST', 'Compliance']
 # secure pipeline dict
 secure_flow = {}
 
@@ -163,36 +164,28 @@ def makeSecure():
         elif 'slug' in i['name'] or 'checkout' in i['name']:
             l.append(i)
             names.append(i['name'])
-    print(l)
     for j, s in enumerate(step_list):
         if s not in names:
             inlist = step_list[j-1]
             if 'codeguru' in s.lower():
-                l.insert(names.index(inlist)+1,{"name":s, "uses": "aws@uses"})
+                with open('tools/codeguru.json', 'r') as f:
+                    json_data = json.load(f)
+                    l.insert(names.index(inlist)+1,json_data)
             elif 'zap' in s.lower():
-                l.insert(names.index(inlist)+1,{"name": s, "uses": "zap@uses", "with":"zap@with"})
+                with open('tools/zap.json', 'r') as f:
+                    json_data = json.load(f)
+                    l.insert(names.index(inlist)+1,json_data)
             elif 'docker' in s.lower():
-                l.insert(names.index(inlist)+1,{"name": s, "uses": "docker@uses", "with":"docker@with"})
+                with open('tools/snyk.json', 'r') as f:
+                    json_data = json.load(f)
+                    l.insert(names.index(inlist)+1,json_data)
 
-    # for i in step_list:
-    #     found = 0
-    #     for s in steps:
-    #         if s['name'] == i:
-    #             l.append(s)
-    #             found = 1
-    #     if found == 0:
-    #         if 'codeguru' in i.lower():
-    #             l.append({"name":i, "uses": "aws@uses"})
-    #         elif 'zap' in i.lower():
-    #             l.append({"name": i, "uses": "zap@uses", "with":"zap@with"})
-    #         else:
-    #             l.append(s)
     print(l)
-    print(tool_pos_dict)
-    # print(step_list)
-    secure_flow = {}
+    secure_flow = file_dict
+    secure_flow['jobs']['deploy']['steps'] = l
+    f = open('test_docs/secure.yaml', 'w+')
+    yaml.dump(secure_flow, f, allow_unicode=True)
     data = request.get_json()
-    # print(data)
     response={"res" : "Successfully integrated tools"}
     return response , 200
 
