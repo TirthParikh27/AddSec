@@ -7,6 +7,7 @@ import logging
 import yaml
 import json
 import time
+from autoGit import cloneGit, pushGit
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,6 +36,9 @@ tools_list = ['CodeGuru', 'ZAP', 'Snyk']
 tools_type = ['SAST', 'DAST', 'Compliance']
 # secure pipeline dict
 secure_flow = {}
+# repo folder
+repo_folder = 'ClonedRepo'
+
 
 # hide unnecessary steps in the ui
 def checkVisible(step):
@@ -54,29 +58,30 @@ def checkVisible(step):
             continue
     return True
 
-@app.route('/upload', methods=['POST'])
-def fileUpload():
-    global filename
-    target=os.path.join(UPLOAD_FOLDER,'test_docs')
-    if not os.path.isdir(target):
-        os.mkdir(target)
-    logger.info("welcome to upload`")
-    file = request.files['file']
-    filename = secure_filename(file.filename)
-    print(filename)
-    destination="/".join([target, filename])
-    file.save(destination)
-    session['uploadFilePath']=destination
-    response={"res" : "Successfully uploaded"}
-    return response
+# @app.route('/upload', methods=['POST'])
+# def fileUpload():
+#     global filename
+#     target=os.path.join(UPLOAD_FOLDER,'test_docs')
+#     if not os.path.isdir(target):
+#         os.mkdir(target)
+#     logger.info("welcome to upload`")
+#     file = request.files['file']
+#     filename = secure_filename(file.filename)
+#     print(filename)
+#     destination="/".join([target, filename])
+#     file.save(destination)
+#     session['uploadFilePath']=destination
+#     response={"res" : "Successfully uploaded"}
+#     return response
 
 # get step names from workflow yaml
 @app.route('/getNames')
 def names():
     global file_dict
     global updated_steps
+    global filename
     if len(updated_steps)==0:
-        with open('test_docs/{}'.format(filename)) as f:
+        with open('{}/.github/workflows/{}'.format(repo_folder,filename)) as f:
             file_dict = yaml.safe_load(f)
         steps = file_dict['jobs']['deploy']['steps']
         for s in steps:
@@ -121,6 +126,8 @@ def setPos():
 def makeSecure():
     global secure_flow
     global file_dict
+    global repo_folder
+    global filename
     tmp_pos_dict = {}
     tool_pos_dict = {}
     step_list = []
@@ -183,7 +190,7 @@ def makeSecure():
     print(l)
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
-    f = open('test_docs/secure.yaml', 'w+')
+    f = open('{}/.github/workflows/{}'.format(repo_folder, filename), 'w')
     yaml.dump(secure_flow, f, allow_unicode=True)
     data = request.get_json()
     response={"res" : "Successfully integrated tools"}
@@ -191,8 +198,12 @@ def makeSecure():
 
 @app.route('/setRepo' , methods=['POST'])
 def setRepo():
+    global filename
+    global repo_folder
     data = request.get_json()
+    filename = data['filename']
     print(data)
+    cloneGit(data['url'], repo_folder)
     response={"res" : "Successfully Found workflow file"}
     return response , 200
 
