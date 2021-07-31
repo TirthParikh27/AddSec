@@ -87,6 +87,7 @@ def names():
         for s in steps:
             s['visible'] = checkVisible(s)
             updated_steps.append(s)
+    print("Returned step names")
     return jsonify(updated_steps)
 
 # return the names of all steps and pos of tools
@@ -103,12 +104,8 @@ def toolNames():
     res = []
     for i in range(len(tools_list)):
         res.append(tools_list[i]+'('+tools_type[i]+')')
+    print("Returned tool names")
     return jsonify(res)
-
-@app.route('/getSecurePipe')
-def securePipe():
-    global secure_flow
-    return secure_flow
 
 # post the index of stages
 @app.route('/setStagePos', methods=['POST'])
@@ -116,8 +113,8 @@ def setPos():
     global pos
     data = request.get_json()
     pos = data.get('pos','')
-    print(pos)
     response={"res" : "Successfully stored positions"}
+    print("Successfully stored positions")
     return response
 
 # make the changes to the pipeline
@@ -175,7 +172,10 @@ def makeSecure():
         if s not in names:
             inlist = step_list[j-1]
             if 'codeguru' in s.lower():
-                with open('tools/codeguru.json', 'r') as f:
+                with open('tools/codeguru_1.json', 'r') as f:
+                    json_data = json.load(f)
+                    l.insert(names.index(inlist)+1,json_data)
+                with open('tools/codeguru_2.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
             elif 'zap' in s.lower():
@@ -187,13 +187,14 @@ def makeSecure():
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
 
-    print(l)
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
     f = open('{}/.github/workflows/{}'.format(repo_folder, filename), 'w')
     yaml.dump(secure_flow, f, allow_unicode=True)
-    data = request.get_json()
+    # push the changes to git repo
+    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder)
     response={"res" : "Successfully integrated tools"}
+    print("Successfully integrated tools and pushed")
     return response , 200
 
 @app.route('/setRepo' , methods=['POST'])
@@ -205,6 +206,7 @@ def setRepo():
     print(data)
     cloneGit(data['url'], repo_folder)
     response={"res" : "Successfully Found workflow file"}
+    print("Successfully Found workflow file")
     return response , 200
 
 

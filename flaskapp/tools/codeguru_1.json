@@ -6,10 +6,3 @@
     "s3_bucket": "codeguru-reviewer-pr  # S3 Bucket with \"codeguru-reviewer-*\" prefix"
   }
 }
-{
-  "name": "Upload review result",
-  "uses": "github/codeql-action/upload-sarif@v1",
-  "with": {
-    "sarif_file": "codeguru-results.sarif.json"
-  }
-}
