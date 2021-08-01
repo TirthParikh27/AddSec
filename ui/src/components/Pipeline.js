@@ -14,6 +14,7 @@ import Upload from "./Upload";
 import Main from "./Main";
 import Label from "./Label";
 import Repo from "./Repo";
+import ToolsConfig from "./ToolsConfig";
 
 function Copyright() {
   return (
@@ -65,7 +66,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ["Enter your repository URL", "Label Pipeline Stages", "Tools Configuration"];
+const steps = [
+  "Enter your repository URL",
+  "Label Pipeline Stages",
+  "Tools Configuration",
+];
 
 function getStepContent(step) {
   switch (step) {
@@ -74,8 +79,8 @@ function getStepContent(step) {
     case 1:
       return <Label />;
     case 2:
-      return <Label />
-  
+      return <ToolsConfig />;
+
     default:
       throw new Error("Unknown step");
   }
@@ -125,8 +130,8 @@ export default function Checkout() {
                   Your Pipeline has been successfully configured and loaded.
                 </Typography>
                 <Typography variant="subtitle1">
-                  Integrate security tools in your pipeline from the
-                  Integrate Tools tab.
+                  Integrate security tools in your pipeline from the Integrate
+                  Tools tab.
                 </Typography>
                 <Typography variant="subtitle1">Enjoy DevSecOps !</Typography>
               </React.Fragment>
