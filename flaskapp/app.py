@@ -254,6 +254,17 @@ def makeSecure():
     print("Successfully integrated tools and pushed")
     return response , 200
 
+@app.route('/setConfig', methods=['POST']):
+def setConfig():
+    data = request.get_json()
+    global sonar_projectKey
+    global sonar_organization
+    sonar_organization = data['orgkey']
+    sonar_projectKey = data['projectkey']
+    print("Received sonar config variables")
+    response={"res" : "Received sonar config variables"}
+    return response, 200
+
 @app.route('/setRepo' , methods=['POST'])
 def setRepo():
     global filename
