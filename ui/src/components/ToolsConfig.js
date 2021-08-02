@@ -30,17 +30,17 @@ const useStyles = makeStyles((theme) => ({
 
 function ToolsConfig() {
   const classes = useStyles();
-  const [config, setConfig] = useState({ url:"" , s3:"" , image:"" });
+  const [config, setConfig] = useState({ url:"" , orgkey:"" , projectkey:"" });
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
 
   const handleChange = (event) => {
     if(event.target.id === "url"){
       setConfig( {...config , url : event.target.value })
-    } else if(event.target.id === "s3") {
-      setConfig({...config , s3 : event.target.value})
+    } else if(event.target.id === "org") {
+      setConfig({...config , orgkey : event.target.value})
     } else {
-      setConfig({...config , image : event.target.value})
+      setConfig({...config , projectkey : event.target.value})
     }
   }
 
@@ -86,16 +86,15 @@ function ToolsConfig() {
     <div className={classes.paper}>
       <Grid container spacing={2}>
         <Grid item xs={12} >
-          <InputLabel id="s3" style={{paddingBottom : "10px"}}>S3 Bucket Name</InputLabel>
-          <TextField id="s3" fullWidth={true} label="S3 Bucket" onChange={handleChange} variant="outlined" />
+          <InputLabel id="org" style={{paddingBottom : "10px"}}>SonarCloud Configuration</InputLabel>
+          <TextField id="org" fullWidth={true} label="Organisation Key" onChange={handleChange} variant="outlined" />
 
         </Grid>
         <Grid item xs={12} >
-          <InputLabel id="image"  style={{paddingBottom : "10px"}}>Docker Image Name</InputLabel>
-          <TextField id="image" fullWidth={true} label="Image Name"  onChange={handleChange} variant="outlined" />
+          <TextField id="projectkey" fullWidth={true} label="Project Key"  onChange={handleChange} variant="outlined" />
         </Grid>
         <Grid item xs={12} >
-          <InputLabel id="url" style={{paddingBottom : "10px"}}>Deployment URL</InputLabel>
+          <InputLabel id="url" style={{paddingBottom : "10px"}}>ZAP Configuration</InputLabel>
           <TextField id="url" fullWidth={true} label="Deployment URL" onChange={handleChange} variant="outlined" />
 
         </Grid>
