@@ -2,6 +2,7 @@
   "name":"ZAP DAST Scan",
   "uses":"zaproxy/action-full-scan@v0.2.0",
   "with":{
-    "target": "'http://flask-app-319191450.us-east-2.elb.amazonaws.com/'"
+    "token": "${{ secrets.GITHUB_TOKEN }}",
+    "target": "http://flask-app-319191450.us-east-2.elb.amazonaws.com/"
   }
 }

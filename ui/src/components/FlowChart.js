@@ -154,16 +154,18 @@ const FlowChart = () => {
         if (finalElements.length === 0) {
           finalElements.push({
             id: String(id++),
-            type: "input",
+            // type: "input",
             sourcePosition: "right",
+            targetPosition: "left",
             data: { label: list[i]["name"] },
             position: { x: x, y: y },
           });
         } else if (i === list.length - 1) {
           finalElements.push({
             id: String(id++),
-            type: "input",
-            sourcePosition: "left",
+            // type: "input",
+            sourcePosition: "right",
+            targetPosition: "left",
             data: { label: list[i]["name"] },
             position: { x: x, y: y },
           });
@@ -308,7 +310,7 @@ const FlowChart = () => {
                 onChange={handleRadio}
               >
                 <Grid container spacing={2}>
-                  
+
                   <Grid item xs={6}>
                     <FormControlLabel
                       value={"Condensed"}
@@ -374,9 +376,9 @@ const FlowChart = () => {
       />
           </Grid>
         </Grid>
-        
+
       </ReactFlowProvider>
-      
+
     </div>
   );
 };

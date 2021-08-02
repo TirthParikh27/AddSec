@@ -8,6 +8,11 @@ import yaml
 import json
 import time
 from autoGit import cloneGit, pushGit
+import ruamel.yaml
+
+yaml = ruamel.yaml.YAML()
+yaml.indent(mapping=2, sequence=4, offset=2)
+yaml.preserve_quotes = True
 
 logging.basicConfig(level=logging.INFO)
 
@@ -84,11 +89,17 @@ def names():
         # TODO
         try:
             with open('{}/.github/workflows/{}'.format(repo_folder,filename)) as f:
-                file_dict = yaml.safe_load(f)
+                # file_dict = yaml.safe_load(f)
+                file_dict = yaml.load(f)
         except:
             with open("/home/mukulsharma/Desktop/UNSW/COMP9447/AddSec/flaskapp/ClonedRepo/.github/workflows/pipeline.yml") as f:
-                file_dict = yaml.safe_load(f)
+                # file_dict = yaml.safe_load(f)
+                file_dict = yaml.load(f)
+
+        tmp_dict = {"on" if k == True else k:v for k,v in file_dict.items()}
+        file_dict = tmp_dict
         steps = file_dict['jobs']['deploy']['steps']
+        print(file_dict)
         for s in steps:
             s['visible'] = checkVisible(s)
             updated_steps.append(s)
@@ -141,9 +152,11 @@ def makeSecure():
                 try:
                     tmp_pos_dict[row['id']]=row['data']['label']
                 except:
-                    print('label??')
+                    # print('label??')
+                    continue
         except:
-            print("NO SOURCE")
+            # print("NO SOURCE")
+            continue
     for t in tmp_pos_dict:
         for r in data:
             try:
@@ -176,19 +189,29 @@ def makeSecure():
     for j, s in enumerate(step_list):
         if s not in names:
             inlist = step_list[j-1]
+            print(inlist)
+            print(step_list)
             if 'codeguru' in s.lower():
                 with open('tools/codeguru_1.json', 'r') as f:
                     json_data = {}
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
+
                 with open('tools/codeguru_2.json', 'r') as f:
                     json_data = {}
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+2,json_data)
+                ind = names.index(inlist)+1
+                names.insert(ind, 'code')
+                ind = names.index(inlist)+1
+                names.insert(ind, 'guru')
+
             elif 'zap' in s.lower():
                 with open('tools/zap.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
+                    ind = names.index(inlist)+1
+                    names.insert(ind, 'zappppp')
             elif 'docker' in s.lower():
                 with open('tools/snyk_1.json', 'r') as f:
                     json_data = json.load(f)
@@ -196,11 +219,21 @@ def makeSecure():
                 with open('tools/snyk_2.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+2, json_data)
+                ind = names.index(inlist)+1
+                names.insert(ind, 'doc')
+                ind = names.index(inlist)+1
+                names.insert(ind, 'ker')
 
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
+    for sf in secure_flow['jobs']['deploy']['steps']:
+        try:
+            sf.pop('visible')
+        except:
+            continue
     f = open('{}/.github/workflows/{}'.format(repo_folder, filename), 'w')
-    yaml.dump(secure_flow, f, allow_unicode=True)
+    # yaml.dump(secure_flow, f, allow_unicode = True)
+    yaml.dump(secure_flow, f)
     # push the changes to git repo
     pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder)
     response={"res" : "Successfully integrated tools"}
