@@ -2,6 +2,6 @@
   "name":"ZAP DAST Scan",
   "uses":"zaproxy/action-full-scan@v0.2.0",
   "with":{
-    "target": "${{ steps.cdk_post_deploy.outputs.env_url }}"
+    "target": "'http://flask-app-319191450.us-east-2.elb.amazonaws.com/'"
   }
 }

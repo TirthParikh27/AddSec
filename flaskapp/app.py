@@ -81,8 +81,13 @@ def names():
     global updated_steps
     global filename
     if len(updated_steps)==0:
-        with open('{}/.github/workflows/{}'.format(repo_folder,filename)) as f:
-            file_dict = yaml.safe_load(f)
+        # TODO
+        try:
+            with open('{}/.github/workflows/{}'.format(repo_folder,filename)) as f:
+                file_dict = yaml.safe_load(f)
+        except:
+            with open("/home/mukulsharma/Desktop/UNSW/COMP9447/AddSec/flaskapp/ClonedRepo/.github/workflows/pipeline.yml") as f:
+                file_dict = yaml.safe_load(f)
         steps = file_dict['jobs']['deploy']['steps']
         for s in steps:
             s['visible'] = checkVisible(s)
@@ -162,30 +167,35 @@ def makeSecure():
     l = []
     names = []
     for i in steps:
-        if i['name'] in step_list:
-            l.append(i)
-            names.append(i['name'])
-        elif 'slug' in i['name'] or 'checkout' in i['name']:
-            l.append(i)
-            names.append(i['name'])
+        # if i['name'] in step_list:
+        l.append(i)
+        names.append(i['name'])
+        # elif 'slug' in i['name'] or 'checkout' in i['name']:
+        #     l.append(i)
+        #     names.append(i['name'])
     for j, s in enumerate(step_list):
         if s not in names:
             inlist = step_list[j-1]
             if 'codeguru' in s.lower():
                 with open('tools/codeguru_1.json', 'r') as f:
+                    json_data = {}
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
                 with open('tools/codeguru_2.json', 'r') as f:
+                    json_data = {}
                     json_data = json.load(f)
-                    l.insert(names.index(inlist)+1,json_data)
+                    l.insert(names.index(inlist)+2,json_data)
             elif 'zap' in s.lower():
                 with open('tools/zap.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
             elif 'docker' in s.lower():
-                with open('tools/snyk.json', 'r') as f:
+                with open('tools/snyk_1.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
+                with open('tools/snyk_2.json', 'r') as f:
+                    json_data = json.load(f)
+                    l.insert(names.index(inlist)+2, json_data)
 
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
