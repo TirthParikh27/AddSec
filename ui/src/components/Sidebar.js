@@ -15,8 +15,8 @@ const Sidebar = () => {
         </Typography>
     
       <div
-        className="dndnode input"
-        onDragStart={(event) => onDragStart(event, "input" , "AWS CodeGuru (SAST)")}
+        className="dndnode"
+        onDragStart={(event) => onDragStart(event, "default" , "AWS CodeGuru (SAST)")}
         draggable
       >
         AWS CodeGuru (SAST)
@@ -29,8 +29,8 @@ const Sidebar = () => {
         OWASP ZAP (DAST)
       </div>
       <div
-        className="dndnode output"
-        onDragStart={(event) => onDragStart(event, "output" , "Docker Image Scanner")}
+        className="dndnode"
+        onDragStart={(event) => onDragStart(event, "default" , "Docker Image Scanner")}
         draggable
       >
         Docker Image Scanner
