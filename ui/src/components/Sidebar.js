@@ -16,10 +16,10 @@ const Sidebar = () => {
     
       <div
         className="dndnode"
-        onDragStart={(event) => onDragStart(event, "default" , "AWS CodeGuru (SAST)")}
+        onDragStart={(event) => onDragStart(event, "default" , "SonarCloud Scan (SAST)")}
         draggable
       >
-        AWS CodeGuru (SAST)
+        SonarCloud Scan (SAST)
       </div>
       <div
         className="dndnode"

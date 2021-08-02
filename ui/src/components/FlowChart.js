@@ -156,16 +156,16 @@ const FlowChart = () => {
             id: String(id++),
             // type: "input",
             sourcePosition: "right",
-            targetPosition: "left",
+            // targetPosition: "left",
             data: { label: list[i]["name"] },
             position: { x: x, y: y },
           });
         } else if (i === list.length - 1) {
           finalElements.push({
             id: String(id++),
-            // type: "input",
-            sourcePosition: "right",
-            targetPosition: "left",
+            type: "input",
+            sourcePosition: "left",
+            // targetPosition: "left",
             data: { label: list[i]["name"] },
             position: { x: x, y: y },
           });
