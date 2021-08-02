@@ -8,10 +8,12 @@ def cloneGit(url , dirName):
   #repo = git.Repo('AddSec')
   origin = repo.remote("origin")
 
-def pushGit(filePath , msg , dirName):
+def pushGit(filePath , msg , dirName , files):
   repo = git.Repo(dirName)
   # Commit
   #repo.index.add([os.path.abspath(os.getcwd())+'\AddSec\demofile.txt'])  # in this case filename would be "/User/some_user/some_dir/demofile.txt"
+  for item in files:
+    repo.index.add([os.path.abspath(os.getcwd())+item])
   repo.index.add([os.path.abspath(os.getcwd())+filePath])
   #repo.index.commit("Workflow edited - test 3")
   repo.index.commit(msg)

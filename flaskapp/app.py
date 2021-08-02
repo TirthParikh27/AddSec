@@ -238,8 +238,8 @@ def makeSecure():
     yaml.dump(secure_flow, f)
     # push the changes to git repo
     repo = getRepo(repo_folder)
-    repo.index.add([os.path.abspath(os.getcwd())+'/ClonedRepo/snyk.sarif'])
-    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder)
+    #repo.index.add([os.path.abspath(os.getcwd())+'/ClonedRepo/snyk.sarif'])
+    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif"])
 
     response={"res" : "Successfully integrated tools"}
     print("Successfully integrated tools and pushed")
