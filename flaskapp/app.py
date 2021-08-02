@@ -43,7 +43,9 @@ tools_type = ['SAST', 'DAST', 'Compliance']
 secure_flow = {}
 # repo folder
 repo_folder = 'ClonedRepo'
-
+# sonar variables
+sonar_organization=""
+sonar_projectKey=""
 
 # hide unnecessary steps in the ui
 def checkVisible(step):
@@ -225,7 +227,15 @@ def makeSecure():
                 names.insert(ind, 'doc')
                 ind = names.index(inlist)+1
                 names.insert(ind, 'ker')
-
+            elif 'sonarcloud' in s.lower():
+                with open('ClonedRepo/sonar-project.properties', 'w') as f:
+                    f.write("sonar.organization={}\nsonar.projectKey={}\nsonar.sources=.".format(sonar_organization, sonar_projectKey))
+                with open('tools/sonarcloud.json', 'r') as f:
+                    json_data = json.load(f)
+                    l.insert(names.index(inlist)+1, json_data)
+                    ind = names.index(inlist)+1
+                    names.insert(ind, 'sonar')
+                    
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
     for sf in secure_flow['jobs']['deploy']['steps']:
@@ -239,11 +249,22 @@ def makeSecure():
     # push the changes to git repo
     repo = getRepo(repo_folder)
     #repo.index.add([os.path.abspath(os.getcwd())+'/ClonedRepo/snyk.sarif'])
-    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif"])
+    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif", "/ClonedRepo/sonar-project.properties"])
 
     response={"res" : "Successfully integrated tools"}
     print("Successfully integrated tools and pushed")
     return response , 200
+
+@app.route('/setConfig', methods=['POST']):
+def setConfig():
+    data = request.get_json()
+    global sonar_projectKey
+    global sonar_organization
+    sonar_organization = data['orgkey']
+    sonar_projectKey = data['projectkey']
+    print("Received sonar config variables")
+    response={"res" : "Received sonar config variables"}
+    return response, 200
 
 @app.route('/setRepo' , methods=['POST'])
 def setRepo():
