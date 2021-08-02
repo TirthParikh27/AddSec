@@ -7,7 +7,7 @@ import logging
 import yaml
 import json
 import time
-from autoGit import cloneGit, pushGit
+from autoGit import cloneGit, pushGit, getRepo
 import ruamel.yaml
 
 yaml = ruamel.yaml.YAML()
@@ -213,6 +213,8 @@ def makeSecure():
                     ind = names.index(inlist)+1
                     names.insert(ind, 'zappppp')
             elif 'docker' in s.lower():
+                with open('ClonedRepo/snyk.sarif', 'w') as f:
+                    pass
                 with open('tools/snyk_1.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
@@ -235,7 +237,10 @@ def makeSecure():
     # yaml.dump(secure_flow, f, allow_unicode = True)
     yaml.dump(secure_flow, f)
     # push the changes to git repo
+    repo = getRepo(repo_folder)
+    repo.index.add([os.path.abspath(os.getcwd())+'/ClonedRepo/snyk.sarif'])
     pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder)
+
     response={"res" : "Successfully integrated tools"}
     print("Successfully integrated tools and pushed")
     return response , 200

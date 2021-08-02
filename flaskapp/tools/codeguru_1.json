@@ -3,6 +3,6 @@
   "uses": "aws-actions/codeguru-reviewer@v1.1",
   "with": {
     "build_path": ".",
-    "s3_bucket": "codeguru-reviewer-pr  # S3 Bucket with \"codeguru-reviewer-*\" prefix"
+    "s3_bucket": "codeguru-reviewer-addsec"
   }
 }

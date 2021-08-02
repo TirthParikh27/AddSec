@@ -6,7 +6,7 @@
     "SNYK_TOKEN": "${{ secrets.SNYK_TOKEN }}"
   },
   "with":{
-    "image": "sample:env",
+    "image": "${{ steps.build-image.outputs.image }}",
     "args": "--file=Dockerfile"
   }
 }

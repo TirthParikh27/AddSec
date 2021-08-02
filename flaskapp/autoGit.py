@@ -18,3 +18,6 @@ def pushGit(filePath , msg , dirName):
   origin = repo.remote("origin")
   # Push
   repo.git.push("--set-upstream", origin, repo.head.ref)
+
+def getRepo(filePath):
+    return git.Repo(filePath)
