@@ -158,13 +158,18 @@ def makeSecure():
     # adding precommit hooks, check is we watn them
     pre_enable = data_received['pre_commit']
 
-    if pre_enable == 'yes':
+    if pre_enable:
         # include precommit file
         file_path = Path("ClonedRepo/.pre-commit-config.yaml")
-        with open(file_path, 'w') as f:
-            with open("tools/pre_commit.json") as ff:
-                json_data = json.load(ff)
-                yaml.dump(json_data, f)
+        json_data = {}
+
+        with open("tools/pre_commit.json") as ff:
+            json_data = json.load(ff)
+        f = open(file_path, "w")
+        print('herheheheheheh')
+        # os.system("touch ClonedRepo/.pre-commit-config.yaml")
+        # f = open(file_path, "w")
+        yaml.dump(json_data, f)
 
     for row in data:
         try:
@@ -266,11 +271,11 @@ def makeSecure():
                     names.insert(ind, 'sonar')
 
     # adding slack to the steps
-    if slack_enable = 'yes':
-        file_path = Path("tools/slack.json")
+    if slack_enable:
+        file_path = Path("tools/slack.yml")
         with open(file_path) as f:
-            json_data = json.load(f)
-            l.append(json_data)
+            f_dict = yaml.load(f)
+        l.append(f_dict)
 
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
