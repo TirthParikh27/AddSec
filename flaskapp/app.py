@@ -150,18 +150,30 @@ def makeSecure():
     tmp_pos_dict = {}
     tool_pos_dict = {}
     step_list = []
-    data = request.get_json()
-    # print(data)
+    data_received = request.get_json()
+    # check if we want slack
+    slack_enable = data_received['slack']
+    # all the security tools and location
+    data = data_received['steps']
+    # adding precommit hooks, check is we watn them
+    pre_enable = data_received['pre_commit']
+
+    if pre_enable == 'yes':
+        # include precommit file
+        file_path = Path("ClonedRepo/.pre-commit-config.yaml")
+        with open(file_path, 'w') as f:
+            with open("tools/pre_commit.json") as ff:
+                json_data = json.load(ff)
+                yaml.dump(json_data, f)
+
     for row in data:
         try:
             if 'dndnode' in row['id']:
                 try:
                     tmp_pos_dict[row['id']]=row['data']['label']
                 except:
-                    # print('label??')
                     continue
         except:
-            # print("NO SOURCE")
             continue
     for t in tmp_pos_dict:
         for r in data:
@@ -182,21 +194,18 @@ def makeSecure():
                 step_list.append(tool_pos_dict[i['id']])
         except:
             continue
+
     steps = file_dict['jobs']['deploy']['steps']
     l = []
     names = []
+
     for i in steps:
-        # if i['name'] in step_list:
         l.append(i)
         names.append(i['name'])
-        # elif 'slug' in i['name'] or 'checkout' in i['name']:
-        #     l.append(i)
-        #     names.append(i['name'])
+
     for j, s in enumerate(step_list):
         if s not in names:
             inlist = step_list[j-1]
-            print(inlist)
-            print(step_list)
             if 'codeguru' in s.lower():
                 file_path = Path("tools/codeguru_1.json")
                 with open(file_path, 'r') as f:
@@ -256,6 +265,13 @@ def makeSecure():
                     ind = names.index(inlist)+1
                     names.insert(ind, 'sonar')
 
+    # adding slack to the steps
+    if slack_enable = 'yes':
+        file_path = Path("tools/slack.json")
+        with open(file_path) as f:
+            json_data = json.load(f)
+            l.append(json_data)
+
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
     for sf in secure_flow['jobs']['deploy']['steps']:
@@ -268,11 +284,12 @@ def makeSecure():
     f = open(file_path, 'w')
     # yaml.dump(secure_flow, f, allow_unicode = True)
     yaml.dump(secure_flow, f)
+
     # push the changes to git repo
     repo = getRepo(repo_folder)
     #repo.index.add([os.path.abspath(os.getcwd())+'/ClonedRepo/snyk.sarif'])
 
-    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif", "/ClonedRepo/sonar-project.properties"])
+    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif", "/ClonedRepo/sonar-project.properties", "/ClonedRepo/.pre-commit-config.yaml"])
     # pushGit(pg, "Your pipeline has been secured", repo_folder, arr)
     response={"res" : "Successfully integrated tools"}
     print("Successfully integrated tools and pushed")
@@ -299,21 +316,6 @@ def setRepo():
     cloneGit(data['url'], repo_folder)
     response={"res" : "Successfully Found workflow file"}
     print("Successfully Found workflow file")
-    return response , 200
-
-@app.route('/preCommit', methods=['POST'])
-def preCommit():
-    data = request.get_json()
-    if data['enable'] == 'yes':
-        # include precommit file
-        file_path = Path("ClonedRepo/.pre-commit-config.yaml")
-        with open(file_path, 'w') as f:
-            with open("tools/pre_commit.json") as ff:
-                json_data = json.load(ff)
-                yaml.dump(json_data, f)
-
-    response={"res" : "Successfully included pre commit file"}
-    print("Successfully included pre commit file")
     return response , 200
 
 if __name__ == "__main__":
