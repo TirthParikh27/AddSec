@@ -235,7 +235,7 @@ def makeSecure():
                     l.insert(names.index(inlist)+1, json_data)
                     ind = names.index(inlist)+1
                     names.insert(ind, 'sonar')
-                    
+
     secure_flow = file_dict
     secure_flow['jobs']['deploy']['steps'] = l
     for sf in secure_flow['jobs']['deploy']['steps']:
@@ -255,7 +255,7 @@ def makeSecure():
     print("Successfully integrated tools and pushed")
     return response , 200
 
-@app.route('/setConfig', methods=['POST']):
+@app.route('/setConfig', methods=['POST'])
 def setConfig():
     data = request.get_json()
     global sonar_projectKey
