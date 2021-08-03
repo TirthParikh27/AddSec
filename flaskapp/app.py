@@ -9,6 +9,8 @@ import json
 import time
 from autoGit import cloneGit, pushGit, getRepo
 import ruamel.yaml
+from pathlib import Path
+
 
 yaml = ruamel.yaml.YAML()
 yaml.indent(mapping=2, sequence=4, offset=2)
@@ -90,7 +92,9 @@ def names():
     if len(updated_steps)==0:
         # TODO
         try:
-            with open('{}/.github/workflows/{}'.format(repo_folder,filename)) as f:
+            file_path = Path("{}/.github/workflows/{}".format(repo_folder,filename))
+            with open(file_path) as f:
+            # with open('{}/.github/workflows/{}'.format(repo_folder,filename)) as f:
                 # file_dict = yaml.safe_load(f)
                 file_dict = yaml.load(f)
         except:
@@ -194,12 +198,16 @@ def makeSecure():
             print(inlist)
             print(step_list)
             if 'codeguru' in s.lower():
-                with open('tools/codeguru_1.json', 'r') as f:
+                file_path = Path("tools/codeguru_1.json")
+                with open(file_path, 'r') as f:
+                # with open('tools/codeguru_1.json', 'r') as f:
                     json_data = {}
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
+                file_path = Path("tools/codeguru_2.json")
 
-                with open('tools/codeguru_2.json', 'r') as f:
+                with open(file_path, 'r') as f:
+                # with open('tools/codeguru_2.json', 'r') as f:
                     json_data = {}
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+2,json_data)
@@ -209,18 +217,26 @@ def makeSecure():
                 names.insert(ind, 'guru')
 
             elif 'zap' in s.lower():
-                with open('tools/zap.json', 'r') as f:
+                file_path = "tools/zap.json"
+                with open(file_path, 'r') as f:
+                # with open('tools/zap.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
                     ind = names.index(inlist)+1
                     names.insert(ind, 'zappppp')
             elif 'docker' in s.lower():
-                with open('ClonedRepo/snyk.sarif', 'w') as f:
+                file_path = "ClonedRepo/snyk.sarif"
+                with open(file_path, 'w') as f:
+                # with open('ClonedRepo/snyk.sarif', 'w') as f:
                     pass
-                with open('tools/snyk_1.json', 'r') as f:
+                file_path = "tools/snyk_1.json"
+                with open(file_path, 'r') as f:
+                # with open('tools/snyk_1.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1,json_data)
-                with open('tools/snyk_2.json', 'r') as f:
+                file_path = "tools/snyk_2.json"
+                # with open('tools/snyk_2.json', 'r') as f:
+                with open(file_path, 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+2, json_data)
                 ind = names.index(inlist)+1
@@ -228,9 +244,13 @@ def makeSecure():
                 ind = names.index(inlist)+1
                 names.insert(ind, 'ker')
             elif 'sonarcloud' in s.lower():
-                with open('ClonedRepo/sonar-project.properties', 'w') as f:
+                file_path = Path("ClonedRepo/sonar-project.properties")
+                # with open('ClonedRepo/sonar-project.properties', 'w') as f:
+                with open(file_path, 'w') as f:
                     f.write("sonar.organization={}\nsonar.projectKey={}\nsonar.sources=.".format(sonar_organization, sonar_projectKey))
-                with open('tools/sonarcloud.json', 'r') as f:
+                file_path = Path("tools/sonarcloud.json")
+                with open(file_path) as f:
+                # with open('tools/sonarcloud.json', 'r') as f:
                     json_data = json.load(f)
                     l.insert(names.index(inlist)+1, json_data)
                     ind = names.index(inlist)+1
@@ -243,14 +263,17 @@ def makeSecure():
             sf.pop('visible')
         except:
             continue
-    f = open('{}/.github/workflows/{}'.format(repo_folder, filename), 'w')
+    file_path = Path("{}/.github/workflows/{}".format(repo_folder, filename))
+    # f = open('{}/.github/workflows/{}'.format(repo_folder, filename), 'w')
+    f = open(file_path, 'w')
     # yaml.dump(secure_flow, f, allow_unicode = True)
     yaml.dump(secure_flow, f)
     # push the changes to git repo
     repo = getRepo(repo_folder)
     #repo.index.add([os.path.abspath(os.getcwd())+'/ClonedRepo/snyk.sarif'])
-    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif", "/ClonedRepo/sonar-project.properties"])
 
+    pushGit("/"+repo_folder+"/.github/workflows/"+filename, "your pipeline has been secured", repo_folder , ["/ClonedRepo/snyk.sarif", "/ClonedRepo/sonar-project.properties"])
+    # pushGit(pg, "Your pipeline has been secured", repo_folder, arr)
     response={"res" : "Successfully integrated tools"}
     print("Successfully integrated tools and pushed")
     return response , 200
@@ -278,6 +301,20 @@ def setRepo():
     print("Successfully Found workflow file")
     return response , 200
 
+@app.route('/preCommit', methods=['POST'])
+def preCommit():
+    data = request.get_json()
+    if data['enable'] == 'yes':
+        # include precommit file
+        file_path = Path("ClonedRepo/.pre-commit-config.yaml")
+        with open(file_path, 'w') as f:
+            with open("tools/pre_commit.json") as ff:
+                json_data = json.load(ff)
+                yaml.dump(json_data, f)
+
+    response={"res" : "Successfully included pre commit file"}
+    print("Successfully included pre commit file")
+    return response , 200
 
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0")

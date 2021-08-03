@@ -1,5 +1,6 @@
 import git
 import os
+from pathlib import Path
 
 def cloneGit(url , dirName):
   # Check out via HTTPS
@@ -11,10 +12,14 @@ def cloneGit(url , dirName):
 def pushGit(filePath , msg , dirName , files):
   repo = git.Repo(dirName)
   # Commit
-  #repo.index.add([os.path.abspath(os.getcwd())+'\AddSec\demofile.txt'])  # in this case filename would be "/User/some_user/some_dir/demofile.txt"
+  # repo.index.add([os.path.abspath(os.getcwd())+'\AddSec\demofile.txt'])  # in this case filename would be "/User/some_user/some_dir/demofile.txt"
   for item in files:
+    path = Path(__file__)
     repo.index.add([os.path.abspath(os.getcwd())+item])
+    # repo.index.add([path / item])
+  # path = Path(__file__)
   repo.index.add([os.path.abspath(os.getcwd())+filePath])
+  # repo.index.add([path / filePath])
   #repo.index.commit("Workflow edited - test 3")
   repo.index.commit(msg)
   origin = repo.remote("origin")
