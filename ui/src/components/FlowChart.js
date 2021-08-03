@@ -14,10 +14,11 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import "../css/dnd.css";
-import { Card, CardContent, Grid } from "@material-ui/core";
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 import SecurityIcon from "@material-ui/icons/Security";
 import SnackBar from "./SnackBar";
-
+import Checkbox from "@material-ui/core/Checkbox";
+import FormGroup from "@material-ui/core/FormGroup";
 
 // const initialElements = [
 //   {
@@ -66,7 +67,11 @@ const FlowChart = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [elements, setElements] = useState([]);
   const [value, setValue] = React.useState("Condensed");
-  const [open  , setOpen] = React.useState(false)
+  const [slack, setSlack] = React.useState(false);
+  const [precommit1, setCommit1] = React.useState(false);
+  const [precommit2, setCommit2] = React.useState(false);
+
+  const [open, setOpen] = React.useState(false);
   const onConnect = (params) => setElements((els) => addEdge(params, els));
   const onElementsRemove = (elementsToRemove) =>
     setElements((els) => removeElements(elementsToRemove, els));
@@ -235,6 +240,16 @@ const FlowChart = () => {
     fetchProducts();
   }, [value]);
 
+  const handleSlack = (event) => {
+    setSlack(event.target.checked);
+  };
+  const handlePreCommit1 = (event) => {
+    setCommit1(event.target.checked);
+  };
+  const handlePreCommit2 = (event) => {
+    setCommit2(event.target.checked);
+  };
+
   const handleRadio = (event) => {
     setValue(event.target.value);
   };
@@ -254,16 +269,21 @@ const FlowChart = () => {
   };
   const handleIntegrate = () => {
     console.log(elements);
+    var obj = {}
+    obj['steps'] = elements
+    obj['slack'] = slack
+    obj['pre_commit'] = precommit1
+    console.log(obj)
     fetch("http://localhost:5000/setToolNames", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(elements),
+      body: JSON.stringify(obj),
     }).then((response) => {
       if (response.ok) {
         console.log("Succesfully Integrated !");
-        setOpen(true)
+        setOpen(true);
       } else {
         console.log("Integration Failed !");
       }
@@ -310,7 +330,6 @@ const FlowChart = () => {
                 onChange={handleRadio}
               >
                 <Grid container spacing={2}>
-
                   <Grid item xs={6}>
                     <FormControlLabel
                       value={"Condensed"}
@@ -352,7 +371,7 @@ const FlowChart = () => {
             </Card>
           </Grid>
 
-          <Grid item={3}></Grid>
+          <Grid item xs={3}></Grid>
           <Grid item xs={6}>
             <Button
               startIcon={<SecurityIcon />}
@@ -367,18 +386,53 @@ const FlowChart = () => {
               Intergate
             </Button>
           </Grid>
-          <Grid item={3}>
-          <SnackBar
-        open={open}
-        handleClose={handleClose}
-        type={"success"}
-        message={"Configuration Saved Successfully !"}
-      />
+          <Grid item xs={3}>
+            <SnackBar
+              open={open}
+              handleClose={handleClose}
+              type={"success"}
+              message={"Configuration Saved Successfully !"}
+            />
           </Grid>
+          <Grid style={{'paddingTop' : "50px"}}item xs={12}>
+            <Typography>Notification System :</Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+              checked={slack}
+              onChange={handleSlack}
+              inputProps={{ "aria-label": "primary checkbox" }}
+            />
+            }
+            label="Slack Bot"
+          />
+          </Grid>
+          <Grid style={{'paddingTop' : "5px"}} item xs={12}>
+          <Typography>Pre-Commit Hooks :</Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+            checked={precommit1}
+            onChange={handlePreCommit1}
+            inputProps={{ "aria-label": "primary checkbox" }}
+          />
+            }
+            label="AWS Git Secrets"
+          />
+         <FormControlLabel
+            control={
+              <Checkbox
+              checked={precommit2}
+              onChange={handlePreCommit2}
+              inputProps={{ "aria-label": "primary checkbox" }}
+            />
+            }
+            label="Dev dependency scanning"
+          />
+          </Grid>
+         
         </Grid>
-
       </ReactFlowProvider>
-
     </div>
   );
 };
