@@ -33,7 +33,14 @@ const Sidebar = () => {
         onDragStart={(event) => onDragStart(event, "default" , "Docker Image Scanner")}
         draggable
       >
-        Docker Image Scanner
+        Snyk Docker Image Scanner
+      </div>
+      <div
+        className="dndnode"
+        onDragStart={(event) => onDragStart(event, "default" , "NIX Reproducible build process")}
+        draggable
+      >
+        NIX Reproducible build process
       </div>
     </aside>
   );
