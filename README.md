@@ -3,8 +3,8 @@ Add "SEC" to DevOps
 
 # Setup
 ## Flask server
-1) cd flaskapp
-2) run "pip install -r requirements.txt"
+1) run "pip install -r requirements.txt"
+2) cd flaskapp
 3) Finally run  "python app.py" to start the server
 
 ## React UI
