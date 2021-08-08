@@ -1,6 +1,6 @@
 # AddSec
 Add "SEC" to DevOps
-Note : Configure aws credentials , slack token , sonarcloud token and any other required tokens to your demo repository 
+### Note : Configure aws credentials , slack token , sonarcloud token and any other required tokens to your demo repository 
 # Setup
 ## Flask server
 1) run "pip install -r requirements.txt"
