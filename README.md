@@ -15,9 +15,9 @@ Add "SEC" to DevOps
 # Page 1 : Load your pipeline
 ![image](https://user-images.githubusercontent.com/47681913/128626418-2f616cf7-e7ea-4362-80fb-44346c96aa26.png)
 This is the first page where you follow the 3 steps to import your existing github actions pipeline
-Step 1 : Enter github repo and workflow name
-Step 2 : Label the Commit , Build and Deploy stages of your pipeline (you have a list of all extracted steps)
-Step 3 : Configure security automation tools  , enter the required details
+1) Enter github repo and workflow name
+2) Label the Commit , Build and Deploy stages of your pipeline (you have a list of all extracted steps)
+3) Configure security automation tools  , enter the required details
 
 # Page 2 : Integrate Tools
 ![image](https://user-images.githubusercontent.com/47681913/128626573-210388cb-f490-482c-a6ec-fa2df883be8d.png)
